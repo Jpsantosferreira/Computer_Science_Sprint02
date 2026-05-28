@@ -28,7 +28,7 @@ parada_emergencia = False
 temperatura_normal = True
 tensao_rede = True
 
-acesso_email = True
+acesso_user = True
 acesso_senha = True
 
 # ===== condições físicas ==============
@@ -48,7 +48,7 @@ else:
 
 # ===== acesso do usuário ==============
 
-login = acesso_email and acesso_senha
+login = acesso_user and acesso_senha
 if login:
     print("Login: Correto - Liberado")
 else:
