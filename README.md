@@ -1,9 +1,8 @@
-# Computer_Science_Sprint02
-========================== CHALLENGE SPRINT ==========================
+# Computer Science - Sprint 02
 
 - Ciência da Computação - 1º Ano;
 - 1CCPO;
-- Sprint 02 - Algoritmo em Python e Simulação com Arduino;
+- Challenge Sprint 02 - Algoritmo em Python e Simulação com Arduino;
 - Team 03;
 - Integrantes:        
     Ana Julia Yumi Inoue - RM: 569430;            
@@ -14,29 +13,25 @@
     Yasmin Cristina Carvalho Mayer - RM: 573964.
 - ChargeGrid Intellegence
 
-========================== OBJETIVOS ==========================             
-Esse projeto tem como objetivo continuar o projeto da sprint 01,         
-mas com foco em dois itens principais:             
-- Um algoritmo em PYTHON;          
-- Uma simulação em ARDUINO no Tinkercad.                  
+                               🔹 Objetivos 🔹                 
+- É uma continuação da Sprint 01 - um diagrama de portas lógicas sobre o funcionamento do eletroposto.
+- Nessa sprint, fizemos um algoritmo em PYTHON e uma simulação em ARDUINO.                   
                     
-========================== ALGORITMO - PYTHON ==========================                   
-O algoritmo no Python é uma simulação com  dados fictícios sobre o funcionamento                              
-de um eletroposto, em um sistema de autorização de uso por parte do usuário, certificação       
-da segurança das partes fisícas (carro, carregador) e partes elétricas (carga, temperatura).       
-O sistema desse modo, possui um mecanismo de bloqueio e aviso, caso algumas das partes acimas       
-não estejam em pleno funcionamento.       
-Caso contrário, o algoritmo vai liberar o uso do carregador para uso do cliente. 
-                              
+                           🐍 Algoritmo em PYTHON 🐍
+- O algoritmo em Python simula a interface do cliente e do administrador, seguindo a lógica do diagrama feito na sprint passada. 
+O sistema possui um input() e dados de entrada (simulados), além de saídas sobre os status das condições descritas no diagrama e representadas no código.
 
-========================== SIMULAÇÃO - ARDUINO ==========================        
-Também criamos uma simulação em arduino, usando o TinkerCad para representar       
+- Além disso, o sistema diferencia os dados que o cliente recebe e os dados do administrador.
+- Por fim, o sistema também possui um mecanismo de parada de emergência, caso acionada, para evitar acidentes ou piores situações.
+
+  
+                           🔸 Simulação em ARDUINO  🔸
+- Também criamos uma simulação em arduino, usando o TinkerCad para representar       
 o funcionamento do eletroposto e do sistema (um pouco mais simples) para 
 demonstrar a liberação e bloqueio do sistema na parte fisíca do projeto.         
-Utilizamos dados ainda simulados e representações para o sistema, para as        
+- Utilizamos dados ainda simulados e representações para o sistema, para as        
 partes de INPUT e OUTPUT do circuito.         
 
 
-===========================================================================  
 
 

@@ -35,7 +35,8 @@ tensao_normal = True
 
 modo_emergencia = False
 
-bateria = 100
+# porcentagem da bateria ---
+bateria = 40
 
 '''
 ====== login - acesso ======
@@ -47,7 +48,26 @@ já o administrador terá acesso a tudo isso, já que é ele que irá tomar as m
 caso de qualquer disturbio ou problema. "
 
 '''
+''' 
+Condições físicas: é um mecanismo de segurança.
+- liberação de acesso ao carregador (cartão RFID); 
+- plugue conectado seria algum veículo conectado ao carregador; 
+- modo parking seria o carro em modo de estacionamento, ou seja, com "freio de mão" puxado 
+para evitar acidentes com a movimentação repentina do veículo;
+- motor desligado é mais uma segurança para evitar acidentes, além de ser o recomendado ao carregar um carro elétrico.
+'''
 
+'''
+Condições elétricas: a segurança da elétrica e do sistema.
+- temperatura precisa estar em normalidade para evitar superaquecimento e outros acidentes;
+- tensão precisa estar presente e em normalidade para o sistema como um todo funcionar;
+- sistema em normalidade significa que tudo está pronto para funcionar.
+'''
+
+'''
+Modo de emergência: é um mecanismo de segurança presente no eletroposto (fisicamente) para 
+evitar acidentes que o sistema não possa impedir ou resolver, como um incêndio, por exemplo.
+'''
 # ====== condições físicas ======
 cond_fisica = cartao_RFID and plugue_conectado and modo_parking and motor_desligado
 
@@ -60,6 +80,9 @@ parada_sistema = modo_emergencia
 # ====== Sistema OK ======
 saida_final = cond_fisica and cond_eletricas and not parada_sistema
 
+'''
+saida final verifica se o sistema está ok e pronto para uso do carregador.
+'''
 # ====== login ======
 login = input("Digite seu login: ")
 if login == "user":
@@ -73,10 +96,25 @@ else:
 carregando = bateria
 
 # ====== login - saidas  ======
+'''
+Nas saídas, temos o case do user, que seria a interface do usuário (simplificada).
+E também temos o case do admin, que é a interface do administrador.
+'''
+
 import subprocess
 
 match login:
     case "user":
+        # verificação do RFID do cliente...
+        if cartao_RFID:
+            print("RFID autorizado --- Liberado para uso ✔️")
+            subprocess.run(['afplay', '/System/Library/Sounds/Funk.aiff'])
+        else:
+            print("RFID inexistente --- Bloqueado para uso ❕")
+            subprocess.run(['afplay', '/System/Library/Sounds/Basso.aiff'])
+            sys.exit()
+
+        # aqui verifica se o modo de emergência foi acionado...
         if not parada_sistema:
             print("Modo de emergência --- NÃO ACIONADO 🟢")
         else:
@@ -84,6 +122,7 @@ match login:
             subprocess.run(['afplay', '/System/Library/Sounds/Basso.aiff'])
             sys.exit()
 
+        # e aqui a saida final, se está tudo na normalidade ou não...
         if saida_final:
             print("Sistema em normalidade = Liberado para uso 🟢")
             subprocess.run(['afplay', '/System/Library/Sounds/Hero.aiff'])
@@ -104,6 +143,7 @@ match login:
             subprocess.run(['afplay', '/System/Library/Sounds/Basso.aiff'])
 
     case "admin":
+        # mostra pro admin os status das condições físicas do eletroposto...
         if cond_fisica:
             print("Condições físicas --- STATUS = OK ✅")
             subprocess.run(['afplay', '/System/Library/Sounds/Hero.aiff'])
@@ -111,6 +151,7 @@ match login:
             print("Condições físicas --- STATUS = FALHA 🔸️")
             subprocess.run(['afplay', '/System/Library/Sounds/Basso.aiff'])
 
+        # aqui mostra os status das condições elétricas...
         if cond_eletricas:
             print("Condições elétricas --- STATUS = OK ✅")
             subprocess.run(['afplay', '/System/Library/Sounds/Hero.aiff'])
@@ -118,12 +159,14 @@ match login:
             print("Condições elétricas --- STATUS = FALHA ❗️️")
             subprocess.run(['afplay', '/System/Library/Sounds/Basso.aiff'])
 
+        # aqui mostra se o modo de emergência foi acionado ou não...
         if not parada_sistema:
             print("Modo de emergência --- NÃO ACIONADO 🔹")
         else:
             print("Modo de emergência --- ACIONADO 🔸")
 
 
+        # e aqui a saída final e os status da bateria...
         if saida_final:
             print("O sistema está em perfeito funcionamento --- ☑️")
             subprocess.run(['afplay', '/System/Library/Sounds/Hero.aiff'])
