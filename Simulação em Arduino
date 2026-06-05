@@ -1,0 +1,166 @@
+Link do Tinkercad: https://www.tinkercad.com/things/fQRDwHidWLG-challenge-sprint-02-computer-science?sharecode=VjoTwtWxlCBuQfehQlGyvKg1-8LKi5zgtaA0mjQbxTs
+
+=========== Código do Arduino ===========       
+/*
+  ====================================================
+  Sprint 02 - Computer Science
+  Eletroposto - Simulação no Tinkercad 
+  ====================================================
+
+  === MAPA DE PINOS ===
+
+  ENTRADAS:
+    D2  - Cartão RFID
+    D3  - Plugue conectado
+    D4  - Modo parking
+    D5  - Motor desligado
+    A0  - Sensor de temperatura
+    D6  - Tensão normal
+    D7  - Sistema normal
+    D8  - Botão de emergência 
+
+  SAÍDAS:
+    D9  - LED verde   → bateria carregada
+    D10 - LED azul    → carregandon
+    D11 - LED vermelho → falha no sistema
+    D12 - Buzzer      → emergência ativa
+
+*/
+
+// === input ===
+const int PIN_RFID     = 2;
+const int PIN_PLUGUE   = 3;
+const int PIN_PARKING  = 4;
+const int PIN_MOTOR    = 5;
+const int PIN_TEMP     = A0;
+const int PIN_TENSAO   = 6;
+const int PIN_SISTEMA  = 7;
+const int PIN_EMERG    = 8;
+
+// === output ===
+const int LED_VERDE  = 9;
+const int LED_AZUL   = 10;
+const int LED_VERMELHO = 11;
+const int BUZZER     = 12;
+
+// === condições ===
+const float TEMP_LIMITE  = 60.0;  //limite da temperatura (simulado)
+const int   BATERIA_SIMULADA = 10;  // bateria (quanto precisa ser carregado) - simulada!  
+const int   FREQ_EMERG  = 500;
+const int   FREQ_FALHA  = 500;
+
+// === SETUP ===
+void setup() {
+
+  pinMode(PIN_RFID,     INPUT);
+  pinMode(PIN_PLUGUE,   INPUT);
+  pinMode(PIN_PARKING,  INPUT);
+  pinMode(PIN_MOTOR,    INPUT);
+  pinMode(PIN_TENSAO,   INPUT);
+  pinMode(PIN_SISTEMA,  INPUT);
+  pinMode(PIN_EMERG,    INPUT_PULLUP);
+
+  pinMode(LED_VERDE,    OUTPUT);
+  pinMode(LED_AZUL,     OUTPUT);
+  pinMode(LED_VERMELHO, OUTPUT);
+  pinMode(BUZZER,       OUTPUT);
+
+  Serial.begin(9600);
+  Serial.println("=== Eletroposto ===");
+}
+
+// === leitura de temperatura  ===
+float lerTemperatura() {
+  int leitura = analogRead(PIN_TEMP);
+  float tensao = leitura * (5.0 / 1023.0);
+  float temperatura = (tensao - 0.5) * 100.0;
+  return temperatura;
+}
+
+// === desliga os outputs ===
+void desligarTudo() {
+  digitalWrite(LED_VERDE,    LOW);
+  digitalWrite(LED_AZUL,     LOW);
+  digitalWrite(LED_VERMELHO, LOW);
+  noTone(BUZZER);
+}
+
+
+void loop() {
+
+  bool cartao_RFID      = digitalRead(PIN_RFID);
+  bool plugue_conectado = digitalRead(PIN_PLUGUE);
+  bool modo_parking     = digitalRead(PIN_PARKING);
+  bool motor_desligado  = digitalRead(PIN_MOTOR);
+
+  float temperatura     = lerTemperatura();
+  bool temp_normal      = (temperatura < TEMP_LIMITE);
+
+  bool tensao_normal    = digitalRead(PIN_TENSAO);
+  bool sistema_normal   = digitalRead(PIN_SISTEMA);
+  bool modo_emergencia  = !digitalRead(PIN_EMERG);
+
+  int bateria           = BATERIA_SIMULADA; 
+
+  bool cond_fisica    = cartao_RFID && plugue_conectado && modo_parking && motor_desligado;
+  bool cond_eletricas = temp_normal && tensao_normal && sistema_normal;
+  bool saida_final    = cond_fisica && cond_eletricas && !modo_emergencia;
+
+  desligarTudo();
+
+  // --- EMERGÊNCIA ---
+  if (modo_emergencia) {
+    digitalWrite(LED_VERMELHO, HIGH);
+    tone(BUZZER, FREQ_EMERG);
+
+    Serial.println("[EMERGENCIA] Modo de emergencia ACIONADO");
+    delay(500);
+    return; 
+  }
+
+  // --- FALHA nas condições ---
+  if (!saida_final) {
+    digitalWrite(LED_VERMELHO, HIGH);
+    
+
+    Serial.println("[FALHA] Sistema fora de normalidade");
+
+    if (!cond_fisica)    Serial.println("  - Falha nas condicoes fisicas");
+    if (!cond_eletricas) Serial.println("  - Falha nas condicoes eletricas");
+    if (!temp_normal) {
+      Serial.print("  - Temperatura: ");
+      Serial.print(temperatura);
+      Serial.println(" C (acima do limite)");
+    }
+
+    delay(500);
+    return;
+  }
+
+  // --- SISTEMA OK ---
+if (bateria > 100) {
+  digitalWrite(LED_VERMELHO, HIGH);
+  Serial.println("[ERRO] Ocorreu um erro no carregamento da bateria!");
+  delay(500);
+  return;
+}
+
+if (bateria == 100) {
+  digitalWrite(LED_VERDE, HIGH);
+  Serial.println("[OK] Bateria carregada - 100%");
+} else {
+  digitalWrite(LED_AZUL, HIGH);
+  Serial.print("[OK] Carregando - Bateria em ");
+  Serial.print(bateria);
+  Serial.println("%");
+}
+  // --- mostra os status ---
+  Serial.print("Temp: ");
+  Serial.print(temperatura);
+  Serial.print(" C | Cond.Fisica: ");
+  Serial.print(cond_fisica ? "OK" : "FALHA");
+  Serial.print(" | Cond.Eletrica: ");
+  Serial.println(cond_eletricas ? "OK" : "FALHA");
+
+  delay(500); 
+}
